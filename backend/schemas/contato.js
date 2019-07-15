@@ -1,32 +1,42 @@
-const { composeWithMongoose } = require('graphql-compose-mongoose');
-const { schemaComposer } = require('graphql-compose');
-
+const {
+    composeWithMongoose
+} = require('graphql-compose-mongoose');
 const Contato = require('../models/contato');
 
 const ContatoTC = composeWithMongoose(Contato, {});
 
-schemaComposer.Query.addFields({
-    contatos: ContatoTC.getResolver('findMany'),
-    contatoPeloId: ContatoTC.getResolver('findById'),
-    quantidadeContatos: ContatoTC.getResolver('count'),
-    contatosPorNome: {
-        type: '[Contato]',
-        args: {nome: 'String!'},
-        resolve: (_, { nome }) => 
-            Contato
-                .find({nome:  {'$regex': nome, '$options': '-i' }})
+const camposContato = {
+    queries: {
+        'contato.todos': ContatoTC.getResolver('findMany'),
+        'contato.porId': ContatoTC.getResolver('findById'),
+        'contato.quantidade': ContatoTC.getResolver('count'),
+        'contato.porNome': {
+            type: '[Contato]',
+            args: {
+                nome: 'String!'
+            },
+            resolve: (_, {
+                    nome
+                }) =>
+                Contato
+                .find({
+                    nome: {
+                        '$regex': nome,
+                        '$options': '-i'
+                    }
+                })
                 .then(contatos => contatos)
                 .catch(erro => {
                     console.log(erro);
                     throw erro;
                 })
+        }
+    },
+    mutations: {
+        'contato.salvar': ContatoTC.getResolver('createOne'),
+        'contato.atualizar': ContatoTC.getResolver('updateById'),
+        'contato.remover': ContatoTC.getResolver('removeById')
     }
-});
+};
 
-schemaComposer.Mutation.addFields({
-    salvar: ContatoTC.getResolver('createOne'),
-    atualizar: ContatoTC.getResolver('updateById'),
-    remover: ContatoTC.getResolver('removeById')
-});
-
-module.exports = schemaComposer.buildSchema();
+module.exports = camposContato;

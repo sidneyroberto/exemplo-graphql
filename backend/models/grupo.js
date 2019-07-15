@@ -5,15 +5,14 @@ const esquema = new mongoose.Schema({
         type: String,
         required: true
     },
-    telefone: {
+    descricao: {
         type: String,
         required: true
     },
-    dataNascimento: Date,
-    grupos: [{
+    contatos: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Grupo'
+        ref: 'Contato'
     }]
 });
 
-module.exports = mongoose.model('Contato', esquema);
+module.exports = mongoose.model('Grupo', esquema);

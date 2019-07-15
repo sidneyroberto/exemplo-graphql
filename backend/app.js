@@ -1,17 +1,23 @@
 const express = require('express');
-const expressGraphQL = require('express-graphql');
+const graphqlHTTP = require('express-graphql');
+const schema = require('./schema');
 
-const contatoSchema = require('./schemas/contato');
 require('./db');
 
 const app = express();
 
 app.use(
-    '/graphql',
-    expressGraphQL({
-        schema: contatoSchema,
-        graphiql: true
-      })
+  '/graphql',
+  graphqlHTTP({
+    schema,
+    graphiql: true,
+    customFormatErrorFn: erro => ({
+      message: erro.message,
+      locations: erro.locations,
+      stack: erro.stack ? erro.stack.split('\n') : [],
+      path: erro.path,
+    })
+  })
 );
 
 const PORTA = process.env.PORT || 3000;

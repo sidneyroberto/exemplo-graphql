@@ -1,0 +1,5 @@
+{
+    "env": {
+        "MONGODB_URI": "mongodb+srv://siddev:51dn3y@cluster0-zgwif.mongodb.net/agenda-dev?retryWrites=true&w=majority"
+    }
+}
